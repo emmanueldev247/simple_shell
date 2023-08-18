@@ -22,7 +22,7 @@ int main(int argc, char **argv)
  */
 void handle_sigint(int dummy)
 {
-	write(STDOUT_FILENO, "\n-> ", 4);
+	write(STDOUT_FILENO, "\n>_> ", 5);
 	fflush(stdout);
 	(void)dummy;
 }
