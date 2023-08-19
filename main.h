@@ -47,5 +47,7 @@ int getLen(int n);
 char *int_to_str(int n);
 void theshell(shell_state *shelldata);
 char *remove_comment(char *in);
+int first_non_whitespace(char *input, int *index);
+int check_error(shell_state *shelldata, char *input);
 
 #endif
