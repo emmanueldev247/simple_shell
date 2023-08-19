@@ -4,9 +4,11 @@
  * main - Entry point
  * @argc: argument count
  * @argv: array of aguments
+ * @env: environmental variable
+ *
  * Return: 0 (success), otherwise (faailure)
  */
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **env)
 {
 	shell_state shelldata;
 
