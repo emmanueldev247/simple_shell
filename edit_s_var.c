@@ -1,11 +1,11 @@
 #include "main.h"
 
 /**
- * add_svas_node - adds a variable at the end of a s_var list.
- * @head: head of the linked list.
- * @val: value of the variable.
- * @lvar: length of the variable.
- * @lval: length of the value.
+ * add_svar_node - adds a variable at the end of a s_var list
+ * @head: head of the linked list
+ * @val: value of the variable
+ * @lvar: length of the variable
+ * @lval: length of the value
  *
  * Return: address of the head.
  */
@@ -43,15 +43,14 @@ s_var *add_svar_node(s_var **head, char *val, int lvar, int lval)
  */
 void free_svar_list(s_var **head)
 {
-	s_var *temp;
-	s_var *curr;
+	s_var *temp, *current;
 
 	if (head)
 	{
-		for (curr = *head; curr != NULL; curr = temp)
+		for (current = *head; current != NULL; current = temp)
 		{
-			temp = curr->next;
-			free(curr);
+			temp = current->next;
+			free(current);
 		}
 		*head = NULL;
 	}
