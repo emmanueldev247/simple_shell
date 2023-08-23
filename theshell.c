@@ -26,12 +26,22 @@ void theshell(shell_state *shelldata)
 			if (input == NULL)
 				continue;
 
-			if (check_error(shelldata, input) == 1)
+			if (check_error(shelldata, input) == -1)
 			{
 				free(input);
 				shelldata->status = 2;
-			/*here*/
+				/* continue */
 			}
+			/*here*
+			input = ;
+			free(input);
+				**/
+			shelldata->counter = 1;
+		}
+		else
+		{
+			free(input);
+			allow = 0;
 		}
 	}
 }
@@ -45,11 +55,9 @@ void theshell(shell_state *shelldata)
  */
 char *remove_comment(char *input)
 {
-	int i, here;
-	int len = _strlenV2(input);
+	int i;
 	char *result;
 
-	here = 0;
 	i = 0;
 	while (input[i])
 	{
@@ -62,22 +70,19 @@ char *remove_comment(char *input)
 			}
 
 			if (input[i - 1] == '\t' || input[i - 1] == ';' || input[i - 1] == ' ')
-			{
-				here = i;
 				break;
-			}
 		}
 		i++;
 	}
 
-	if (here)
+	if (i)
 	{
-		result = (char *)malloc(sizeof(char) * (here));
+		result = (char *)malloc(sizeof(char) * (i));
 		if (result == NULL)
 			return (NULL);
 
-		memcpy(result, input, here);
-		result[here] = '\0';
+		_memcpy(result, input, i);
+		result[i] = '\0';
 
 		free(input);
 

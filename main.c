@@ -15,7 +15,12 @@ int main(int argc, char **argv, char **env)
 	signal(SIGINT, handle_sigint);
 	data_init(&shelldata, argv);
 	theshell(&shelldata);
-	return (0);
+
+	/** here **/
+	if (shelldata.status < 0)
+		return (255);
+
+	return (shelldata.status);
 }
 
 /**
