@@ -68,11 +68,16 @@ void print_error(shell_state *shelldata, char *input, int i, int bool);
 char *_strcpy(char *dest, char *src);
 char *_strcat(char *dest, const char *src);
 void print_error(shell_state *shelldata, char *input, int i, int bool);
-char *construct_err(shell_state *shdata, char *i, char *m1, char *m2, char *m3);
+char *cnstr_err(shell_state *shdata, char *i, char *m1, char *m2, char *m3);
 void print_error_message(char *error_message);
 char *determine_error_message(char *input, int i, int bool);
 int error_sep(char *input, int i, char last);
 int xRepeatedChar(char *input, int i);
-char *str_var(char *input, shell_state *shelldata);
+char *str_var(shell_state *shelldata, char *input);
+int varCheck(s_var **head, char *in, char *status, shell_state *shelldata);
+void envCheck(s_var **head, shell_state *shelldata, char *in);
+s_var *add_svar_node(s_var **head, char *val, int lvar, int lval);
+void free_svar_list(s_var **head);
+char *replaced_input(s_var **head, char *input, char *new_input, int nlen);
 
 #endif
