@@ -30,13 +30,16 @@ void theshell(shell_state *shelldata)
 			{
 				free(input);
 				shelldata->status = 2;
-				/* continue */
+				continue;
 			}
-			/*here*
-			input = ;
-			free(input);
+
+			input = str_var(shelldata, input);
+			/**
+			 * here *
+			 * allow =
 				**/
-			shelldata->counter = 1;
+			shelldata->counter += 1;
+			free(input);
 		}
 		else
 		{
