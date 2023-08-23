@@ -10,11 +10,15 @@
 #include <sys/stat.h>
 #include <signal.h>
 
+#define TOKEN_SIZE 128
+#define BUFFER_SIZE 1024
+#define TOKEN_DELIMITERS "\r\a\n\t "
+
 extern char **environ;
 
 
 /**
- * struct data - structure that contains all relevant data
+ * struct shdata - structure that contains all relevant data
  *				related to the shell state
  * @arguments: tokens of the command line
  * @argv: array of arguments
@@ -24,14 +28,14 @@ extern char **environ;
  * @input: command line written by the user
  * @status: last status of the shell
  */
-typedef struct data
+typedef struct shdata
 {
 	char **arguments;
 	char **argv;
 	int counter;
 	char *pid;
 	char **_environ;
-	char **input;
+	char *input;
 	int status;
 } shell_state;
 
@@ -49,6 +53,31 @@ typedef struct str_var_list
 	char *varVal;
 	struct str_var_list *next;
 } s_var;
+
+/**
+ * struct list_line - singly linked list
+ * @cmdline: command line
+ * @next: next node
+ *
+ */
+typedef struct list_line
+{
+	char *cmdline;
+	struct list_line *next;
+} lineList;
+
+
+/**
+ * struct list_sep - singly linked list
+ * @sep: seperators
+ * @next: next node
+ *
+ */
+typedef struct list_sep
+{
+	char sep;
+	struct list_sep *next;
+} SepList;
 
 int main(int ac, char **av, char **env);
 void handle_sigint(int dummy);
@@ -79,5 +108,16 @@ void envCheck(s_var **head, shell_state *shelldata, char *in);
 s_var *add_svar_node(s_var **head, char *val, int lvar, int lval);
 void free_svar_list(s_var **head);
 char *replaced_input(s_var **head, char *input, char *new_input, int nlen);
+int split_cmds(shell_state *shelldata, char *input);
+char *swapChr(char *input, int flag);
+void add_node_list(SepList **headSep, lineList **headList, char *input);
+SepList *add_sep_node(SepList **head, char sep);
+lineList *add_line_node(lineList **head, char *cmdline);
+int compare_str(char *input, const char *delimeter);
+char *_strtok(char *input, const char *delimiter);
+void free_sep_list(SepList **head);
+void free_line_list(lineList **head);
+int split_cmds(shell_state *shelldata, char *input);
+char **split_cmd_line(char *input);
 
 #endif
