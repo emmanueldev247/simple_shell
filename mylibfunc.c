@@ -25,7 +25,7 @@ char *int_to_str(int n)
 	else
 		num = n;
 
-	for(i = len - 1; i >= 0; i--)
+	for (i = len - 1; i >= 0; i--)
 	{
 		string[i] = (num % 10) + '0';
 		num /= 10;
