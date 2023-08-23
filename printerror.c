@@ -1,7 +1,7 @@
 #include "main.h"
 
 /**
- * construct_err - Constructs an error message
+ * cnstr_err - Constructs an error message
  * @shdata: data structure
  * @i: counter component of the error message
  * @m1: error message component
@@ -10,7 +10,7 @@
  *
  * Return: Pointer to the allocated error message or NULL if allocation fails
  */
-char *construct_err(shell_state *shdata, char *i, char *m1, char *m2, char *m3)
+char *cnstr_err(shell_state *shdata, char *i, char *m1, char *m2, char *m3)
 {
 	char *error_message;
 	int length;
@@ -120,7 +120,7 @@ void print_error(shell_state *shelldata, char *input, int i, int bool)
 	msg3 = "\" unexpected\n";
 	counter = int_to_str(shelldata->counter);
 
-	error_message = construct_err(shelldata, counter, message, msg2, msg3);
+	error_message = cnstr_err(shelldata, counter, message, msg2, msg3);
 
 	print_error_message(error_message);
 
