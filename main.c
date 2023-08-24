@@ -4,7 +4,6 @@
  * main - Entry point
  * @argc: argument count
  * @argv: array of aguments
- * @env: environmental variable
  *
  * Return: 0 (success), otherwise (faailure)
  */
@@ -35,7 +34,7 @@ int main(int argc, char **argv)
 void handle_sigint(int dummy)
 {
 	(void)dummy;
-	write(STDOUT_FILENO, "\n>_> ", 5);
+	write(STDOUT_FILENO, "\n$ ", 3);
 }
 
 

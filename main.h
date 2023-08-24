@@ -184,4 +184,15 @@ int execute_cmd(shell_state *shelldata);
 
 void free_struct(shell_state *shelldata);
 
+/** Help func **/
+int help_cmd(shell_state *shelldata);
+void general_help(void);
+void help_only(void);
+void help_env(void);
+void help_setenv(void);
+void help_unsetenv(void);
+void help_alias(void);
+void help_cd(void);
+void help_exit(void);
+
 #endif

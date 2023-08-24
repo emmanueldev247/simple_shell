@@ -61,20 +61,16 @@ int env_cmd(shell_state *shelldata)
 {
 	int i, j;
 
-	i = 0;
-	while (shelldata->_environ != NULL)
+	for (i = 0; shelldata->_environ[i]; i++)
 	{
-		j = 0;
-		while (shelldata->_environ[i][j])
-			j++;
+		for (j = 0; shelldata->_environ[i][j]; j++)
+			;
 
 		write(STDOUT_FILENO, shelldata->_environ[i], j);
 		write(STDOUT_FILENO, "\n", 1);
 		fflush(stdout);
-		i++;
 	}
 	shelldata->status = 0;
-	printf("\n\n\n................\n\n\n");
 
 	return (1);
 }

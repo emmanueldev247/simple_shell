@@ -14,13 +14,13 @@ char *error_cd(shell_state *shelldata)
 	ver_str = int_to_str(shelldata->counter);
 	if (shelldata->arguments[1][0] == '-')
 	{
-		msg = ": Illegal option ";
 		len_id = 2;
+		msg = ": Illegal option ";
 	}
 	else
 	{
-		msg = ": can't cd to ";
 		len_id = _strlen(shelldata->arguments[1]);
+		msg = ": can't cd to ";
 	}
 
 	length = _strlen(shelldata->argv[0]) + _strlen(shelldata->arguments[0]);
@@ -61,8 +61,8 @@ char *err_strcat(shell_state *shelldata, char *msg, char *error, char *ver_str)
 	if (shelldata->arguments[1][0] == '-')
 	{
 		illegal_flag = malloc(3);
-		illegal_flag[1] = shelldata->arguments[1][1];
 		illegal_flag[0] = '-';
+		illegal_flag[1] = shelldata->arguments[1][1];
 		illegal_flag[2] = '\0';
 		_strcat(error, illegal_flag);
 
