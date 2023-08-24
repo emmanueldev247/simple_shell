@@ -34,10 +34,8 @@ void theshell(shell_state *shelldata)
 			}
 
 			input = str_var(shelldata, input);
-			/**
-			 * here *
-			 * allow =
-				**/
+			allow = split_cmds(shelldata, input);
+
 			shelldata->counter += 1;
 			free(input);
 		}

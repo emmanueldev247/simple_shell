@@ -1,5 +1,4 @@
 #include "main.h"
-
 /**
  * cmp_env - compares env var names
  * @nenv: name of the environment variable
@@ -52,25 +51,28 @@ char *get_env(const char *var_name, char **_env)
 }
 
 /**
- * _env - prints the evironment variables
+ * env_cmd - prints the env vars
+ * @shelldata: data structure
  *
- * @datash: data relevant.
- * Return: 1 on success.
+ * Return: 1 (success)
  */
-int _env(shell_state *datash)
+int env_cmd(shell_state *shelldata)
 {
 	int i, j;
 
-	for (i = 0; datash->_environ[i]; i++)
+	i = 0;
+	while (shelldata->_environ)
 	{
+		j = 0;
+		while (shelldata->_environ[i][j])
+			j++;
 
-		for (j = 0; datash->_environ[i][j]; j++)
-			;
-
-		write(STDOUT_FILENO, datash->_environ[i], j);
+		write(STDOUT_FILENO, shelldata->_environ[i], j);
 		write(STDOUT_FILENO, "\n", 1);
+		fflush(stdout);
+		i++;
 	}
-	datash->status = 0;
+	shelldata->status = 0;
 
 	return (1);
 }

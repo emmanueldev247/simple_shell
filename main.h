@@ -105,6 +105,10 @@ char *_memcpy(void *dest, const void *src,  unsigned int n);
 char *_memcpyV2(char *dest, char *src, int n);
 int getLen(int n);
 char *int_to_str(int n);
+int my_isdigit(const char *s);
+int my_atoi(char *str);
+
+
 void theshell(shell_state *shelldata);
 char *remove_comment(char *in);
 int first_non_whitespace(char *input, int *index);
@@ -129,6 +133,9 @@ char *swapChr(char *input, int flag);
 void add_node_list(SepList **headSep, lineList **headList, char *input);
 SepList *add_sep_node(SepList **head, char sep);
 lineList *add_line_node(lineList **head, char *cmdline);
+void next_cmd(SepList **list_s, lineList **list_l, shell_state *shelldata);
+
+
 int compare_str(char *input, const char *delimeter);
 char *_strtok(char *input, const char *delimiter);
 void free_sep_list(SepList **head);
@@ -163,5 +170,16 @@ char *error_on_path126(shell_state *shelldata);
 char *err_exit(shell_state *shelldata);
 char *error_cd(shell_state *shelldata);
 char *err_strcat(shell_state *sh, char *msg, char *error, char *ver_str);
+
+int env_cmd(shell_state *shelldata);
+int exit_cmd(shell_state *shelldata);
+
+int is_exec(shell_state *shelldata);
+int is_current(char *path, int *i);
+char *which_cmd(char *cmd, char **_environ);
+int check_cmd_err(char *dir, shell_state *shelldata);
+int execute_cmd(shell_state *shelldata);
+
+void free_struct(shell_state *shelldata);
 
 #endif

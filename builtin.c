@@ -18,9 +18,7 @@ int executeCMD(shell_state *shelldata)
 	if (cmd_builtins != NULL)
 		return (cmd_builtins(shelldata));
 
-	/**
-	* return (cmd_exec(shelldata));
-*/
+	return (execute_cmd(shelldata));
 	return (0);
 }
 
@@ -35,15 +33,12 @@ int (*getBuiltin(char *cmd))(shell_state *)
 	int i;
 	builtin_list builtin_cmd[] = {
 		{"cd", cd_cmd },
-		/**
-		 * hee **
-		{"env", env_cmd },
-		{"setenv", setenv_cmd },
-		{"exit", exit_cmd },
-		{"unsetenv", unsetenv_cmd },
-		{"help", help_cmd },
-		* {NULL, NULL }
-		 */
+		{"env", env_cmd},
+		{"setenv", cmp_setenv},
+		{"unsetenv", unset_env},
+		{"exit", exit_cmd},
+	/*	{"help", help_cmd}; */
+		{NULL, NULL }
 	};
 
 	i = 0;

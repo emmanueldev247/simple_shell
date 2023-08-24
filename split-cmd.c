@@ -52,7 +52,6 @@ char *swapChr(char *input, int flag)
 
 /**
  * split_cmds - split prompt lines according to the separators
- *				;, | and &, and runs the code
  * @shelldata: shell data
  * @input: input string
  *
@@ -81,12 +80,8 @@ int split_cmds(shell_state *shelldata, char *input)
 
 		if (allow == 0)
 			break;
-		(void)listSep;
-	/**
-	 * here now
 
-
-		go_next(&listSep, &listLine, shelldata);
+		next_cmd(&listSep, &listLine, shelldata);
 
 		if (listLine != NULL)
 			listLine = listLine->next;
@@ -97,8 +92,7 @@ int split_cmds(shell_state *shelldata, char *input)
 
 	if (allow == 0)
 		return (0);
-	** here now **/
-	}
+
 	return (1);
 }
 
@@ -147,4 +141,47 @@ char **split_cmd_line(char *input)
 	}
 
 	return (tokens);
+}
+
+
+/**
+ * next_cmd - go to the next command line stored
+ * @list_s: separator list
+ * @list_l: command line list
+ * @shelldata: data structure
+ *
+ * Return: no return
+ */
+void next_cmd(SepList **list_s, lineList **list_l, shell_state *shelldata)
+{
+	SepList *ls_s;
+	int loop_sep;
+	lineList *ls_l;
+
+	ls_s = *list_s;
+	loop_sep = 1;
+	ls_l = *list_l;
+
+	while (ls_s != NULL && loop_sep)
+	{
+		if (shelldata->status == 0)
+		{
+			if (ls_s->sep == '&' || ls_s->sep == ';')
+				loop_sep = 0;
+			if (ls_s->sep == '|')
+				ls_l = ls_l->next, ls_s = ls_s->next;
+		}
+		else
+		{
+			if (ls_s->sep == '|' || ls_s->sep == ';')
+				loop_sep = 0;
+			if (ls_s->sep == '&')
+				ls_l = ls_l->next, ls_s = ls_s->next;
+		}
+		if (ls_s != NULL && !loop_sep)
+			ls_s = ls_s->next;
+	}
+
+	*list_s = ls_s;
+	*list_l = ls_l;
 }
