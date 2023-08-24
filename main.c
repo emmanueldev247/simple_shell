@@ -18,7 +18,9 @@ int main(int argc, char **argv, char **env)
 
 	(void)env;
 	(void)argc;
-	/** here **/
+
+	free_struct(&shelldata);
+
 	if (shelldata.status < 0)
 		return (255);
 
@@ -62,4 +64,27 @@ void data_init(shell_state *shelldata, char **argv)
 
 	shelldata->_environ[i] = NULL;
 	shelldata->pid = int_to_str(getpid());
+}
+
+
+
+/**
+ * free_struct - free data strct
+ * @shelldata: data structure
+ *
+ * Return: no return
+ */
+void free_struct(shell_state *shelldata)
+{
+	unsigned int i;
+
+	i = 0;
+	while (shelldata->_environ[i])
+	{
+		free(shelldata->_environ[i]);
+		i++;
+	}
+
+	free(shelldata->pid);
+	free(shelldata->_environ);
 }

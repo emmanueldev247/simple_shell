@@ -136,7 +136,6 @@ void cd_to_previous(shell_state *shelldata)
 	getcwd(pwd, sizeof(pwd));
 	cp_pwd = _strdup(pwd);
 
-	/** here **/
 	p_oldpwd = get_env("OLDPWD", shelldata->_environ);
 
 	if (p_oldpwd == NULL)
