@@ -20,10 +20,16 @@ char *swapChr(char *input, int flag)
 		while (input[i])
 		{
 			if (input[i] == '&')
-				input[i] = (input[i + 1] != '&') ? 12 : (i++, input[i]);
-			else if (input[i] == '|')
-				input[i] = (input[i + 1] != '|') ? 16 : (i++, input[i]);
+			{
+				if (input[i + 1] != '&')
+					input[i] = 12;
 
+				else if (input[i] == '|')
+				{
+					if (input[i + 1] != '|')
+						input[i] = 16;
+				}
+			}
 			i++;
 		}
 	}
@@ -70,13 +76,15 @@ int split_cmds(shell_state *shelldata, char *input)
 	{
 		shelldata->input = listLine->cmdline;
 		shelldata->arguments = split_cmd_line(shelldata->input);
-	/**
-	 * here now
-	*	allow = exec_line(shelldata);
-	*	free(shelldata->args);
+		allow = executeCMD(shelldata);
+		free(shelldata->arguments);
 
 		if (allow == 0)
 			break;
+		(void)listSep;
+	/**
+	 * here now
+
 
 		go_next(&listSep, &listLine, shelldata);
 
@@ -125,14 +133,13 @@ char **split_cmd_line(char *input)
 		if (i == buffer_size)
 		{
 			buffer_size += TOKEN_SIZE;
-			/**
-			* tokens = _reallocdp(tokens, i, sizeof(char *) * buffer_size);
+			tokens = _realloc_doublep(tokens, i, sizeof(char *) * buffer_size);
+
 			if (tokens == NULL)
 			{
 				write(STDERR_FILENO, ": error\n", 18);
 				exit(EXIT_FAILURE);
 			}
-			*/
 		}
 		token = _strtok(NULL, TOKEN_DELIMITERS);
 		tokens[i] = token;

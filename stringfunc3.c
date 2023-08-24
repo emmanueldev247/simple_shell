@@ -81,3 +81,49 @@ int compare_str(char *input, const char *delimeter)
 	}
 	return (1);
 }
+
+
+/**
+ * _realloc_doublep - reallocates memory for a double pointer
+ * @ptr: old double pointer
+ * @size: size of old pointer
+ * @new_size: new size of new pointer
+ *
+ * Return: new pointer
+ */
+char **_realloc_doublep(char **ptr, unsigned int size, unsigned int new_size)
+{
+	char **newptr;
+	unsigned int i;
+
+	if (new_size == 0)
+	{
+		free(ptr);
+		return (NULL);
+	}
+
+	if (ptr == NULL)
+		return (malloc(sizeof(char *) * new_size));
+
+	if (new_size == size)
+		return (ptr);
+
+	newptr = malloc(sizeof(char *) * new_size);
+	if (newptr == NULL)
+		return (NULL);
+
+	if (size <= new_size)
+	{
+		for (i = 0; i < size; i++)
+			newptr[i] = ptr[i];
+	}
+	else
+	{
+		for (i = 0; i < new_size; i++)
+			newptr[i] = ptr[i];
+	}
+
+	free(ptr);
+
+	return (newptr);
+}

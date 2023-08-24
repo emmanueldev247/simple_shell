@@ -149,7 +149,7 @@ void envCheck(s_var **head, shell_state *shelldata, char *in)
  */
 char *replaced_input(s_var **head, char *input, char *new_input, int nlen)
 {
-	int len_var, i, j, k;
+	int  i, j, k;
 	s_var *index;
 
 	index = *head, i = 0, j = 0;

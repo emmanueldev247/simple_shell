@@ -16,6 +16,8 @@ int main(int argc, char **argv, char **env)
 	data_init(&shelldata, argv);
 	theshell(&shelldata);
 
+	(void)env;
+	(void)argc;
 	/** here **/
 	if (shelldata.status < 0)
 		return (255);
