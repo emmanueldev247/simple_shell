@@ -9,12 +9,14 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <limits.h>
 
 #define TOKEN_SIZE 128
 #define BUFFER_SIZE 1024
 #define TOKEN_DELIMITERS "\r\a\n\t "
 
 extern char **environ;
+
 
 
 /**
@@ -79,6 +81,20 @@ typedef struct list_sep
 	struct list_sep *next;
 } SepList;
 
+/**
+ * struct cmd_builtin_srt - struct for command arguments
+ * @name: The name of the command builtin i.e cd, etc
+ * @func: pointer function
+ */
+typedef struct cmd_builtin_srt
+{
+	char *name;
+	int (*func)(shell_state *shelldata);
+} builtin_list;
+
+
+
+
 int main(int ac, char **av, char **env);
 void handle_sigint(int dummy);
 void data_init(shell_state *shelldata, char **argv);
@@ -119,5 +135,33 @@ void free_sep_list(SepList **head);
 void free_line_list(lineList **head);
 int split_cmds(shell_state *shelldata, char *input);
 char **split_cmd_line(char *input);
+char **_realloc_doublep(char **ptr, unsigned int size, unsigned int new_size);
+int executeCMD(shell_state *datash);
+
+int (*getBuiltin(char *cmd))(shell_state *);
+
+int _strcmp(char *s1, char *s2);
+void setEnv(char *env_name, char *env_value, shell_state *shelldata);
+char *copyInfo(char *env_name, char *env_value);
+int cmp_setenv(shell_state *shelldata);
+int unset_env(shell_state *shelldata);
+
+int cd_cmd(shell_state *shelldata);
+void cd_to_dot(shell_state *shelldata);
+void cd_here(shell_state *shelldata);
+void cd_to_previous(shell_state *shelldata);
+void cd_home(shell_state *shelldata);
+
+char *get_env(const char *var_name, char **_env);
+void revString(char *s);
+int cmp_env(const char *nenv, const char *name);
+
+int getError(shell_state *shelldata, int eval);
+char *errorEnv(shell_state *shelldata);
+char *err_not_found(shell_state *shelldata);
+char *error_on_path126(shell_state *shelldata);
+char *err_exit(shell_state *shelldata);
+char *error_cd(shell_state *shelldata);
+char *err_strcat(shell_state *sh, char *msg, char *error, char *ver_str);
 
 #endif
