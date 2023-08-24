@@ -95,7 +95,7 @@ typedef struct cmd_builtin_srt
 
 
 
-int main(int ac, char **av, char **env);
+int main(int ac, char **av);
 void handle_sigint(int dummy);
 void data_init(shell_state *shelldata, char **argv);
 char *_strdup(const char *str);
@@ -128,7 +128,9 @@ void envCheck(s_var **head, shell_state *shelldata, char *in);
 s_var *add_svar_node(s_var **head, char *val, int lvar, int lval);
 void free_svar_list(s_var **head);
 char *replaced_input(s_var **head, char *input, char *new_input, int nlen);
+
 int split_cmds(shell_state *shelldata, char *input);
+
 char *swapChr(char *input, int flag);
 void add_node_list(SepList **headSep, lineList **headList, char *input);
 SepList *add_sep_node(SepList **head, char sep);
@@ -140,7 +142,7 @@ int compare_str(char *input, const char *delimeter);
 char *_strtok(char *input, const char *delimiter);
 void free_sep_list(SepList **head);
 void free_line_list(lineList **head);
-int split_cmds(shell_state *shelldata, char *input);
+
 char **split_cmd_line(char *input);
 char **_realloc_doublep(char **ptr, unsigned int size, unsigned int new_size);
 int executeCMD(shell_state *datash);

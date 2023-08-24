@@ -112,6 +112,7 @@ char *which_cmd(char *cmd, char **_environ)
 	struct stat st;
 
 	path = get_env("PATH", _environ);
+
 	if (path)
 	{
 		ptr_path = _strdup(path);
@@ -125,7 +126,6 @@ char *which_cmd(char *cmd, char **_environ)
 					return (cmd);
 			len_dir = _strlen(token_path);
 			dir = malloc(len_dir + len_cmd + 2);
-
 			if (dir == NULL)
 				return (NULL);
 			_strcpy(dir, token_path), _strcat(dir, "/");

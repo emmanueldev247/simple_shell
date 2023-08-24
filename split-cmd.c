@@ -75,12 +75,12 @@ int split_cmds(shell_state *shelldata, char *input)
 	{
 		shelldata->input = listLine->cmdline;
 		shelldata->arguments = split_cmd_line(shelldata->input);
+
 		allow = executeCMD(shelldata);
 		free(shelldata->arguments);
 
 		if (allow == 0)
 			break;
-
 		next_cmd(&listSep, &listLine, shelldata);
 
 		if (listLine != NULL)
