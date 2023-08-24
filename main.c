@@ -9,22 +9,19 @@
  */
 int main(int argc, char **argv)
 {
-	(void)argc;
 	shell_state shelldata;
 
 	signal(SIGINT, handle_sigint);
 	data_init(&shelldata, argv);
 	theshell(&shelldata);
 
-	/**
-	 * free_struct(&shelldata);
+	free_struct(&shelldata);
 
+	(void)argc;
 	if (shelldata.status < 0)
 		return (255);
 
 	return (shelldata.status);
-	*/
-	return (0);
 }
 
 /**
@@ -86,4 +83,20 @@ void free_struct(shell_state *shelldata)
 
 	free(shelldata->pid);
 	free(shelldata->_environ);
+}
+
+/**
+ * line_read - Read a line of input from stdin
+ * @eof_status: A pointer to an integer to store EOF or error status
+ *
+ * Return: A pointer to the read line or NULL on EOF or error
+ */
+char *line_read(int *eof_status)
+{
+	size_t buffer_size = 0;
+	char *user_input = NULL;
+
+	*eof_status = getline(&user_input, &buffer_size, stdin);
+
+	return (user_input);
 }

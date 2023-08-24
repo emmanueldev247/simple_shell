@@ -12,8 +12,8 @@ int execute_cmd(shell_state *shelldata)
 	pid_t pd;
 	pid_t wpd;
 
-	(void)wpd;
 	exec = is_exec(shelldata);
+	(void)wpd;
 	if (exec == -1)
 		return (1);
 	if (exec == 0)
@@ -63,10 +63,16 @@ int is_exec(shell_state *shelldata)
 
 	input = shelldata->arguments[0];
 
-	i = 0;
-	while (input[i])
+	for (i = 0; input[i]; i++)
 	{
-		if (input[i] == '.')
+		if (input[i] == '/' && i != 0)
+		{
+			if (input[i + 1] == '.')
+				continue;
+			i++;
+			break;
+		}
+		else if (input[i] == '.')
 		{
 			if (input[i + 1] == '.')
 				return (0);
@@ -75,16 +81,8 @@ int is_exec(shell_state *shelldata)
 			else
 				break;
 		}
-		else if (input[i] == '/' && i != 0)
-		{
-			if (input[i + 1] == '.')
-				continue;
-			i++;
-			break;
-		}
 		else
 			break;
-		i++;
 	}
 
 	if (i == 0)

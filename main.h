@@ -96,6 +96,7 @@ typedef struct cmd_builtin_srt
 
 
 int main(int ac, char **av);
+char *line_read(int *eof_status);
 void handle_sigint(int dummy);
 void data_init(shell_state *shelldata, char **argv);
 char *_strdup(const char *str);

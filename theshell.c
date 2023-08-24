@@ -8,18 +8,16 @@
  */
 void theshell(shell_state *shelldata)
 {
-	int allow;
+	int allow, read;
 	char *input = NULL;
-	size_t len = 0;
-	ssize_t read;
 
 	allow = 1;
-	while (allow)
+	while (allow == 1)
 	{
 		write(STDOUT_FILENO, "$ ", 2);
 		fflush(stdout);
 
-		read = getline(&input, &len, stdin);
+		input = line_read(&read);
 		if (read != -1)
 		{
 			input = remove_comment(input);
@@ -33,10 +31,10 @@ void theshell(shell_state *shelldata)
 				continue;
 			}
 			input = str_var(shelldata, input);
-			allow = split_cmds(shelldata, input);
 
+			allow = split_cmds(shelldata, input);
 			shelldata->counter += 1;
-			/*free(input);*/
+			free(input);
 		}
 		else
 		{

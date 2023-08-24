@@ -78,7 +78,6 @@ int split_cmds(shell_state *shelldata, char *input)
 
 		allow = executeCMD(shelldata);
 		free(shelldata->arguments);
-
 		if (allow == 0)
 			break;
 		next_cmd(&listSep, &listLine, shelldata);
