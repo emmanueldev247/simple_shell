@@ -16,7 +16,7 @@ void theshell(shell_state *shelldata)
 	allow = 1;
 	while (allow)
 	{
-		write(STDOUT_FILENO, ">_> ", 4);
+		write(STDOUT_FILENO, "$ ", 2);
 		fflush(stdout);
 
 		read = getline(&input, &len, stdin);

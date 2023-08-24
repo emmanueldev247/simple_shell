@@ -36,7 +36,7 @@ int (*getBuiltin(char *cmd))(shell_state *)
 		{"setenv", cmp_setenv},
 		{"unsetenv", unset_env},
 		{"exit", exit_cmd},
-	/*	{"help", help_cmd}; */
+		{"help", help_cmd},
 		{NULL, NULL }
 	};
 

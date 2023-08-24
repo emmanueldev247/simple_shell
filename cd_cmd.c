@@ -20,21 +20,21 @@ int cd_cmd(shell_state *shelldata)
 		is_home = _strcmp("$HOME", target_dir);
 	}
 
-	if (target_dir || !is_ddash || !is_home_symbol || !is_home)
+	if (target_dir == NULL || !is_ddash || !is_home_symbol || !is_home)
 	{
 		cd_home(shelldata);
-		return (1);
-	}
-
-	if (_strcmp("-", target_dir) == 0)
-	{
-		cd_to_previous(shelldata);
 		return (1);
 	}
 
 	if (_strcmp(".", target_dir) == 0 || _strcmp("..", target_dir) == 0)
 	{
 		cd_to_dot(shelldata);
+		return (1);
+	}
+
+	if (_strcmp("-", target_dir) == 0)
+	{
+		cd_to_previous(shelldata);
 		return (1);
 	}
 
@@ -110,14 +110,14 @@ void cd_here(shell_state *shelldata)
 		return;
 	}
 
-	cp_pwd = _strdup(pwd);
-	setEnv("OLDPWD", cp_pwd, shelldata);
-
 	cp_dir = _strdup(dir);
 	setEnv("PWD", cp_dir, shelldata);
 
-	free(cp_pwd);
+	cp_pwd = _strdup(pwd);
+	setEnv("OLDPWD", cp_pwd, shelldata);
+
 	free(cp_dir);
+	free(cp_pwd);
 
 	shelldata->status = 0;
 
