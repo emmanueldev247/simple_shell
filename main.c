@@ -8,23 +8,24 @@
  *
  * Return: 0 (success), otherwise (faailure)
  */
-int main(int argc, char **argv, char **env)
+int main(int argc, char **argv)
 {
+	(void)argc;
 	shell_state shelldata;
 
 	signal(SIGINT, handle_sigint);
 	data_init(&shelldata, argv);
 	theshell(&shelldata);
 
-	(void)env;
-	(void)argc;
-
-	free_struct(&shelldata);
+	/**
+	 * free_struct(&shelldata);
 
 	if (shelldata.status < 0)
 		return (255);
 
 	return (shelldata.status);
+	*/
+	return (0);
 }
 
 /**
@@ -33,9 +34,8 @@ int main(int argc, char **argv, char **env)
  */
 void handle_sigint(int dummy)
 {
-	write(STDOUT_FILENO, "\n>_> ", 5);
-	fflush(stdout);
 	(void)dummy;
+	write(STDOUT_FILENO, "\n>_> ", 5);
 }
 
 

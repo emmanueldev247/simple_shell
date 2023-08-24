@@ -32,12 +32,11 @@ void theshell(shell_state *shelldata)
 				shelldata->status = 2;
 				continue;
 			}
-
 			input = str_var(shelldata, input);
 			allow = split_cmds(shelldata, input);
 
 			shelldata->counter += 1;
-			free(input);
+			/*free(input);*/
 		}
 		else
 		{

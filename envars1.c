@@ -45,6 +45,7 @@ char *get_env(const char *var_name, char **_env)
 			ptr_env = _env[i];
 			break;
 		}
+		i++;
 	}
 
 	return (ptr_env + mov);
@@ -61,7 +62,7 @@ int env_cmd(shell_state *shelldata)
 	int i, j;
 
 	i = 0;
-	while (shelldata->_environ)
+	while (shelldata->_environ != NULL)
 	{
 		j = 0;
 		while (shelldata->_environ[i][j])
@@ -73,6 +74,7 @@ int env_cmd(shell_state *shelldata)
 		i++;
 	}
 	shelldata->status = 0;
+	printf("\n\n\n................\n\n\n");
 
 	return (1);
 }

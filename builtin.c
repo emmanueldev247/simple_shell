@@ -19,7 +19,6 @@ int executeCMD(shell_state *shelldata)
 		return (cmd_builtins(shelldata));
 
 	return (execute_cmd(shelldata));
-	return (0);
 }
 
 /**
