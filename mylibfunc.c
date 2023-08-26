@@ -34,6 +34,7 @@ char *int_to_str(int n)
 	return (string);
 }
 
+
 /**
  * getLen - get the length of a number
  * @n: number
@@ -42,7 +43,7 @@ char *int_to_str(int n)
  */
 int getLen(int n)
 {
-	int len;
+	long int len;
 	unsigned int num;
 
 	len = 0;
@@ -65,7 +66,6 @@ int getLen(int n)
 	return (len);
 }
 
-
 /**
  * my_atoi - Convert a string to an integer
  * @str: The string to convert
@@ -74,7 +74,7 @@ int getLen(int n)
  */
 int my_atoi(char *str)
 {
-	int result, sign;
+int result, sign;
 
 	result = 0;
 	sign = 1;
@@ -117,4 +117,3 @@ int my_isdigit(const char *s)
 	}
 	return (1);
 }
-

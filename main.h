@@ -1,5 +1,9 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef _MAIN_H_
+#define _MAIN_H_
+
+#define TOKEN_DELIMITERS "\r\a\n\t "
+#define TOKEN_SIZE 128
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,14 +14,11 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <limits.h>
+#include <errno.h>
+#include <fcntl.h>
 
-#define TOKEN_SIZE 128
-#define BUFFER_SIZE 1024
-#define TOKEN_DELIMITERS "\r\a\n\t "
 
 extern char **environ;
-
-
 
 /**
  * struct shdata - structure that contains all relevant data
@@ -41,159 +42,192 @@ typedef struct shdata
 	int status;
 } shell_state;
 
-/**
- * struct str_var_list - linked list for str_var
- * @valLen: length of the value
- * @varLen: length of the variable
- * @varVal: value of the variable
- * @next: next node in list
- */
-typedef struct str_var_list
-{
-	int valLen;
-	int varLen;
-	char *varVal;
-	struct str_var_list *next;
-} s_var;
 
 /**
- * struct list_line - singly linked list
- * @cmdline: command line
+ * struct sep_list_s - single linked list
+ * @separator: ; | &
  * @next: next node
- *
+ * Description: single linked list to store separators
  */
-typedef struct list_line
+typedef struct sep_list_s
 {
-	char *cmdline;
-	struct list_line *next;
-} lineList;
-
+	char separator;
+	struct sep_list_s *next;
+} sep_list;
 
 /**
- * struct list_sep - singly linked list
- * @sep: seperators
+ * struct line_list_s - single linked list
+ * @line: command line
  * @next: next node
- *
+ * Description: single linked list to store command lines
  */
-typedef struct list_sep
+typedef struct line_list_s
 {
-	char sep;
-	struct list_sep *next;
-} SepList;
+	char *line;
+	struct line_list_s *next;
+} line_list;
 
 /**
- * struct cmd_builtin_srt - struct for command arguments
- * @name: The name of the command builtin i.e cd, etc
- * @func: pointer function
+ * struct r_var_list - single linked list
+ * @len_var: length of the variable
+ * @val: value of the variable
+ * @len_val: length of the value
+ * @next: next node
+ * Description: single linked list to store variables
  */
-typedef struct cmd_builtin_srt
+typedef struct r_var_list
+{
+	int len_var;
+	char *val;
+	int len_val;
+	struct r_var_list *next;
+} r_var;
+
+/**
+ * struct builtin_s - Builtin struct for command args.
+ * @name: The name of the command builtin i.e cd, exit, env
+ * @f: data type pointer function.
+ */
+typedef struct builtin_s
 {
 	char *name;
-	int (*func)(shell_state *shelldata);
-} builtin_list;
+	int (*f)(shell_state *datash);
+} builtin_t;
 
+/* aux_lists.c */
+sep_list *add_sep_node_end(sep_list **head, char sep);
+void free_sep_list(sep_list **head);
+line_list *add_line_node_end(line_list **head, char *line);
+void free_line_list(line_list **head);
 
+/* aux_lists2.c */
+r_var *add_rvar_node(r_var **head, int lvar, char *var, int lval);
+void free_rvar_list(r_var **head);
 
-
-int main(int ac, char **av);
-char *line_read(int *eof_status);
-void handle_sigint(int dummy);
-void data_init(shell_state *shelldata, char **argv);
-char *_strdup(const char *str);
+/* aux_str2.c */
+char *_strdup(const char *s);
 int _strlen(const char *s);
-int _strlenV2(char *s);
-char *_memcpy(void *dest, const void *src,  unsigned int n);
-char *_memcpyV2(char *dest, char *src, int n);
-int getLen(int n);
-char *int_to_str(int n);
-int my_isdigit(const char *s);
-int my_atoi(char *str);
+
+/* check_syntax_error.c */
+int repeated_char(char *input, int i);
+int error_sep_op(char *input, int i, char last);
+void print_syntax_error(shell_state *datash, char *input, int i, int bool);
 
 
-void theshell(shell_state *shelldata);
-char *remove_comment(char *in);
-int first_non_whitespace(char *input, int *index);
-int check_error(shell_state *shelldata, char *input);
-void print_error(shell_state *shelldata, char *input, int i, int bool);
-char *_strcpy(char *dest, char *src);
-char *_strcat(char *dest, const char *src);
-void print_error(shell_state *shelldata, char *input, int i, int bool);
-char *cnstr_err(shell_state *shdata, char *i, char *m1, char *m2, char *m3);
-void print_error_message(char *error_message);
-char *determine_error_message(char *input, int i, int bool);
-int error_sep(char *input, int i, char last);
-int xRepeatedChar(char *input, int i);
-char *str_var(shell_state *shelldata, char *input);
-int varCheck(s_var **head, char *in, char *status, shell_state *shelldata);
-void envCheck(s_var **head, shell_state *shelldata, char *in);
-s_var *add_svar_node(s_var **head, char *val, int lvar, int lval);
-void free_svar_list(s_var **head);
-char *replaced_input(s_var **head, char *input, char *new_input, int nlen);
+/* split.c */
+char *swap_char(char *input, int bool);
+void add_nodes(sep_list **head_s, line_list **head_l, char *input);
+void go_next(sep_list **list_s, line_list **list_l, shell_state *datash);
+int split_commands(shell_state *datash, char *input);
+char **split_line(char *input);
 
-int split_cmds(shell_state *shelldata, char *input);
+/* rep_var.c */
+void check_env(r_var **h, char *in, shell_state *data);
+int check_vars(r_var **h, char *in, char *st, shell_state *data);
+char *replaced_input(r_var **head, char *input, char *new_input, int nlen);
+char *rep_var(char *input, shell_state *datash);
 
-char *swapChr(char *input, int flag);
-void add_node_list(SepList **headSep, lineList **headList, char *input);
-SepList *add_sep_node(SepList **head, char sep);
-lineList *add_line_node(lineList **head, char *cmdline);
-void next_cmd(SepList **list_s, lineList **list_l, shell_state *shelldata);
+/* get_line.c */
+void bring_line(char **lineptr, size_t *n, char *buffer, size_t j);
+ssize_t get_line(char **lineptr, size_t *n, FILE *stream);
+
+/* exec_line */
+int exec_line(shell_state *datash);
+
+/* cmd_exec.c */
+int is_cdir(char *path, int *i);
+char *_which(char *cmd, char **_environ);
+int is_executable(shell_state *datash);
+int check_error_cmd(char *dir, shell_state *datash);
+int cmd_exec(shell_state *datash);
+
+/* env1.c */
+char *_getenv(const char *name, char **_environ);
+int _env(shell_state *datash);
+
+/* env2.c */
+char *copy_info(char *name, char *value);
+void set_env(char *name, char *value, shell_state *datash);
+int _setenv(shell_state *datash);
+int _unsetenv(shell_state *datash);
+
+/* cd.c */
+void cd_dot(shell_state *datash);
+void cd_to(shell_state *datash);
+void cd_previous(shell_state *datash);
+void cd_to_home(shell_state *datash);
+
+/* cd_shell.c */
+int cd_shell(shell_state *datash);
+
+/* get_builtin */
+int (*get_builtin(char *cmd))(shell_state *datash);
+
+/* _exit.c */
+int exit_shell(shell_state *datash);
+
+/* aux_error1.c */
+char *strcat_cd(shell_state *, char *, char *, char *);
+char *error_get_cd(shell_state *datash);
+char *error_not_found(shell_state *datash);
+char *error_exit_shell(shell_state *datash);
+
+/* aux_error2.c */
+char *error_get_alias(char **arguments);
+char *error_env(shell_state *datash);
+char *error_syntax(char **arguments);
+char *error_permission(char **arguments);
+char *error_path_126(shell_state *datash);
 
 
-int compare_str(char *input, const char *delimeter);
-char *_strtok(char *input, const char *delimiter);
-void free_sep_list(SepList **head);
-void free_line_list(lineList **head);
+/* get_error.c */
+int get_error(shell_state *datash, int eval);
 
-char **split_cmd_line(char *input);
-char **_realloc_doublep(char **ptr, unsigned int size, unsigned int new_size);
-int executeCMD(shell_state *datash);
 
-int (*getBuiltin(char *cmd))(shell_state *);
+/* aux_help.c */
+void aux_help_env(void);
+void aux_help_setenv(void);
+void aux_help_unsetenv(void);
+void aux_help_general(void);
+void aux_help_exit(void);
 
-int _strcmp(char *s1, char *s2);
-void setEnv(char *env_name, char *env_value, shell_state *shelldata);
-char *copyInfo(char *env_name, char *env_value);
-int cmp_setenv(shell_state *shelldata);
-int unset_env(shell_state *shelldata);
+/* aux_help2.c */
+void aux_help(void);
+void aux_help_alias(void);
+void aux_help_cd(void);
 
-int cd_cmd(shell_state *shelldata);
-void cd_to_dot(shell_state *shelldata);
-void cd_here(shell_state *shelldata);
-void cd_to_previous(shell_state *shelldata);
-void cd_home(shell_state *shelldata);
+/* get_help.c */
+int get_help(shell_state *datash);
 
-char *get_env(const char *var_name, char **_env);
-void revString(char *s);
-int cmp_env(const char *nenv, const char *name);
+/**  mine 88*/
 
-int getError(shell_state *shelldata, int eval);
-char *errorEnv(shell_state *shelldata);
-char *err_not_found(shell_state *shelldata);
-char *error_on_path126(shell_state *shelldata);
-char *err_exit(shell_state *shelldata);
-char *error_cd(shell_state *shelldata);
-char *err_strcat(shell_state *sh, char *msg, char *error, char *ver_str);
-
-int env_cmd(shell_state *shelldata);
-int exit_cmd(shell_state *shelldata);
-
-int is_exec(shell_state *shelldata);
-int is_current(char *path, int *i);
-char *which_cmd(char *cmd, char **_environ);
-int check_cmd_err(char *dir, shell_state *shelldata);
-int execute_cmd(shell_state *shelldata);
 
 void free_struct(shell_state *shelldata);
+void data_init(shell_state *shelldata, char **argv);
 
-/** Help func **/
-int help_cmd(shell_state *shelldata);
-void general_help(void);
-void help_only(void);
-void help_env(void);
-void help_setenv(void);
-void help_unsetenv(void);
-void help_alias(void);
-void help_cd(void);
-void help_exit(void);
+/* shell_loop.c */
+char *remove_comment(char *input);
+void theshell(shell_state *shelldata);
+char *line_read(int *eof_status);
+int check_error(shell_state *shelldata, char *input);
+int first_non_whitespace(char *input, int *i);
+int my_isdigit(const char *s);
+char *_strcpy(char *dest, char *src);
+char *_strcat(char *dest, const char *src);
+int _strcmp(char *s1, char *s2);
+int compare_str(char *input, const char *delimeter);
+char *_strtok(char *input, const char *delimiter);
+void revString(char *s);
+int getLen(int n);
+char *int_to_str(int n);
+int my_atoi(char *str);
+char *_memcpy(void *dest, const void *src,  unsigned int n);
+
+void handle_sigint(int dummy);
+
+char *_realloc(char *ptr, unsigned int old_size, unsigned int new_size);
+char **_reallocdoublep(char **ptr, unsigned int size, unsigned int new_size);
+
+/**  mine 88*/
 
 #endif
