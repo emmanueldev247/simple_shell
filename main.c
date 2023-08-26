@@ -73,10 +73,11 @@ int main(int argc, char **argv)
 	signal(SIGINT, handle_sigint);
 	data_init(&shelldata, argv);
 	theshell(&shelldata);
-	/** here **/
+
 	free_struct(&shelldata);
 	(void)argc;
-	if (shelldata.status < 0)
-		return (255);
-	return (shelldata.status);
+	if (shelldata.status > 0)
+		return (shelldata.status);
+
+	return (255);
 }

@@ -8,13 +8,13 @@
 int (*get_builtin(char *cmd))(shell_state *)
 {
 	builtin_t builtin[] = {
-		{ "env", _env },
-		{ "exit", exit_shell },
-		{ "setenv", _setenv },
-		{ "unsetenv", _unsetenv },
-		{ "cd", cd_shell },
-		{ "help", get_help },
-		{ NULL, NULL }
+		{"cd", cd_cmd},
+		{"env", _env},
+		{"setenv", _setenv},
+		{"unsetenv", _unsetenv},
+		{"help", help_cmd},
+		{"exit", exit_cmd},
+		{NULL, NULL }
 	};
 	int i;
 
@@ -36,37 +36,36 @@ int (*get_builtin(char *cmd))(shell_state *)
  */
 int get_error(shell_state *shelldata, int eval)
 {
-	char *error;
+char *error = NULL;
 
-	switch (eval)
-	{
-	case -1:
+	if (eval == -1)
 		error = error_env(shelldata);
-		break;
-	case 126:
-		error = error_path_126(shelldata);
-		break;
-	case 127:
+
+	else if (eval == 127)
 		error = error_not_found(shelldata);
-		break;
-	case 2:
+
+	else if (eval == 126)
+		error = error_path_126(shelldata);
+
+	else if (eval == 2)
+	{
 		if (_strcmp("exit", shelldata->arguments[0]) == 0)
 			error = error_exit_shell(shelldata);
+
 		else if (_strcmp("cd", shelldata->arguments[0]) == 0)
 			error = error_get_cd(shelldata);
-		break;
 	}
 
 	if (error)
 	{
 		write(STDERR_FILENO, error, _strlen(error));
+		fflush(stdout);
 		free(error);
 	}
 
 	shelldata->status = eval;
 	return (eval);
 }
-
 
 
 /**

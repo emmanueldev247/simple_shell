@@ -167,14 +167,14 @@ int check_error(shell_state *shelldata, char *input)
 	if (firstChar == -1)
 	{
 		print_syntax_error(shelldata, input, begin, 0);
-		return (1);
+		return (-1);
 	}
 
 	i = error_sep_op(input + begin, 0, *(input + begin));
 	if (i != 0)
 	{
 		print_syntax_error(shelldata, input, begin + i, 1);
-		return (1);
+		return (-1);
 	}
 	return (0);
 }

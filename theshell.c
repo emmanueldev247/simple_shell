@@ -76,7 +76,7 @@ void theshell(shell_state *shelldata)
 			if (input == NULL)
 				continue;
 
-			if (check_error(shelldata, input) == 1)
+			if (check_error(shelldata, input) == -1)
 			{
 				free(input);
 				shelldata->status = 2;
