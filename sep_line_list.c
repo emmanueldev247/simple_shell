@@ -1,143 +1,111 @@
 #include "main.h"
 
 /**
- * add_sep_node - adds a separator at the end of a SepList
- * @head: head of the linked list
- * @sep: separator
- *
- * Return: address of the head
- */
-SepList *add_sep_node(SepList **head, char sep)
-{
-	SepList *new, *temp;
-
-	new = malloc(sizeof(SepList));
-	if (new == NULL)
-		return (NULL);
-
-	new->sep = sep;
-	new->next = NULL;
-	temp = *head;
-
-	if (temp == NULL)
-		*head = new;
-	else
-	{
-		for (; temp->next != NULL; temp = temp->next)
-			;
-		temp->next = new;
-	}
-
-	return (*head);
-}
-
-/**
- * free_sep_list - frees a SepList
- * @head: head of the linked list
- *
- */
-void free_sep_list(SepList **head)
-{
-	SepList *temp, *current;
-
-	if (head)
-	{
-		for (current = *head; current != NULL; current = temp)
-		{
-			temp = current->next;
-			free(current);
-		}
-		*head = NULL;
-	}
-}
-
-
-/**
- * add_line_node - adds a command line at the end of a lineList
- * @head: head of the linked list
- * @cmdline: command line to be added
- *
- * Return: address of the head
- */
-lineList *add_line_node(lineList **head, char *cmdline)
-{
-	lineList *new, *temp;
-
-	new = malloc(sizeof(SepList));
-	if (new == NULL)
-		return (NULL);
-
-	new->cmdline = cmdline;
-	new->next = NULL;
-	temp = *head;
-
-	if (temp == NULL)
-		*head = new;
-	else
-	{
-		for (; temp->next != NULL; temp = temp->next)
-			;
-		temp->next = new;
-	}
-
-	return (*head);
-}
-
-
-/**
- * free_line_list - frees a lineList
+ * add_sep_node_end - adds a separator found at the end
+ * of a sep_list.
  * @head: head of the linked list.
- *
+ * @sep: separator found (; | &).
+ * Return: address of the head.
  */
-void free_line_list(lineList **head)
+sep_list *add_sep_node_end(sep_list **head, char sep)
 {
-	lineList *temp, *current;
+	sep_list *new, *temp;
 
-	if (head)
+	new = malloc(sizeof(sep_list));
+	if (new == NULL)
+		return (NULL);
+
+	new->separator = sep;
+	new->next = NULL;
+	temp = *head;
+
+	if (temp == NULL)
 	{
-		for (current = *head; current != NULL; current = temp)
+		*head = new;
+	}
+	else
+	{
+		while (temp->next != NULL)
+			temp = temp->next;
+		temp->next = new;
+	}
+
+	return (*head);
+}
+
+/**
+ * free_sep_list - frees a sep_list
+ * @head: head of the linked list.
+ * Return: no return.
+ */
+void free_sep_list(sep_list **head)
+{
+	sep_list *temp;
+	sep_list *curr;
+
+	if (head != NULL)
+	{
+		curr = *head;
+		while ((temp = curr) != NULL)
 		{
-			temp = current->next;
-			free(current);
+			curr = curr->next;
+			free(temp);
 		}
 		*head = NULL;
 	}
 }
 
-
 /**
- * add_node_list - add separators and command lines to the list
- * @headSep: head of separator list
- * @headList: head of command lines list
- * @input: input string
- *
- * Return: no return
+ * add_line_node_end - adds a command line at the end
+ * of a line_list.
+ * @head: head of the linked list.
+ * @line: command line.
+ * Return: address of the head.
  */
-void add_node_list(SepList **headSep, lineList **headList, char *input)
+line_list *add_line_node_end(line_list **head, char *line)
 {
-	char *line;
-	int i;
+	line_list *new, *temp;
 
-	input = swapChr(input, 0);
+	new = malloc(sizeof(line_list));
+	if (new == NULL)
+		return (NULL);
 
-	for (i = 0; input[i]; i++)
+	new->line = line;
+	new->next = NULL;
+	temp = *head;
+
+	if (temp == NULL)
 	{
-		if (input[i] == ';')
-			add_sep_node(headSep, input[i]);
-
-		if (input[i] == '|' || input[i] == '&')
-		{
-			add_sep_node(headSep, input[i]);
-			i++;
-		}
+		*head = new;
+	}
+	else
+	{
+		while (temp->next != NULL)
+			temp = temp->next;
+		temp->next = new;
 	}
 
-	line = _strtok(input, ";|&");
-
-	for (; line != NULL; line = _strtok(NULL, ";|&"))
-	{
-		line = swapChr(line, 1);
-		add_line_node(headList, line);
-	}
+	return (*head);
 }
 
+/**
+ * free_line_list - frees a line_list
+ * @head: head of the linked list.
+ * Return: no return.
+ */
+void free_line_list(line_list **head)
+{
+	line_list *temp;
+	line_list *curr;
+
+	if (head != NULL)
+	{
+		curr = *head;
+		while ((temp = curr) != NULL)
+		{
+			curr = curr->next;
+			free(temp);
+		}
+		*head = NULL;
+	}
+}

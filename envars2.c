@@ -1,131 +1,129 @@
 #include "main.h"
 
 /**
- * copyInfo - copy info
- * @env_name: name
- * @env_value: value
+ * copy_info - copies info to create
+ * a new env or alias
+ * @name: name (env or alias)
+ * @value: value (env or alias)
  *
- * Return: new env or alias
+ * Return: new env or alias.
  */
-char *copyInfo(char *env_name, char *env_value)
+char *copy_info(char *name, char *value)
 {
-	int len_name, len_value, length;
-	char *new_env;
+	char *new;
+	int len_name, len_value, len;
 
-	len_value = _strlen(env_value);
-	len_name = _strlen(env_name);
-	length = 2 + len_name + len_value;
+	len_name = _strlen(name);
+	len_value = _strlen(value);
+	len = len_name + len_value + 2;
+	new = malloc(sizeof(char) * (len));
+	_strcpy(new, name);
+	_strcat(new, "=");
+	_strcat(new, value);
+	_strcat(new, "\0");
 
-	new_env = (char *)malloc(sizeof(char) * (length));
-	if (new_env == NULL)
-		return (NULL);
-
-	_strcpy(new_env, env_name);
-	_strcat(new_env, "=");
-	_strcat(new_env, env_value);
-	_strcat(new_env, "\0");
-
-	return (new_env);
+	return (new);
 }
 
 /**
- * setEnv - sets an env
- * @env_name: name of the env
- * @env_value: value of the env
- * @sd: data structure
+ * set_env - sets an environment variable
  *
+ * @name: name of the environment variable
+ * @value: value of the environment variable
+ * @sh: data structure (environ)
+ * Return: no return
  */
-void setEnv(char *env_name, char *env_value, shell_state *sd)
+void set_env(char *name, char *value, shell_state *sh)
 {
-	char *var_env, *name_env;
 	int i;
+	char *var_env, *name_env;
 
-	i = 0;
-	while (sd->_environ[i])
+	for (i = 0; sh->_environ[i]; i++)
 	{
-		var_env = _strdup(sd->_environ[i]);
+		var_env = _strdup(sh->_environ[i]);
 		name_env = _strtok(var_env, "=");
-		if (_strcmp(name_env, env_name) == 0)
+		if (_strcmp(name_env, name) == 0)
 		{
-			free(sd->_environ[i]);
-			sd->_environ[i] = copyInfo(name_env, env_value);
+			free(sh->_environ[i]);
+			sh->_environ[i] = copy_info(name_env, value);
 			free(var_env);
 			return;
 		}
 		free(var_env);
-		i++;
 	}
 
-	sd->_environ = _realloc_doublep(sd->_environ, i, sizeof(char *) * (i + 2));
-	sd->_environ[i] = copyInfo(env_name, env_value);
-	sd->_environ[i + 1] = NULL;
+	sh->_environ = _reallocdoublep(sh->_environ, i, sizeof(char *) * (i + 2));
+	sh->_environ[i] = copy_info(name, value);
+	sh->_environ[i + 1] = NULL;
 }
 
 /**
- * cmp_setenv - compares env variables names
- * @shelldata: data structure
+ * _setenv - compares env variables names
+ * with the name passed.
+ * @sh: data relevant (env name and env value)
  *
- * Return: 1 (success)
+ * Return: 1 on success.
  */
-int cmp_setenv(shell_state *shelldata)
+int _setenv(shell_state *sh)
 {
-	if (shelldata->arguments[1] == NULL || shelldata->arguments[2] == NULL)
+
+	if (sh->arguments[1] == NULL || sh->arguments[2] == NULL)
 	{
-		getError(shelldata, -1);
+		get_error(sh, -1);
 		return (1);
 	}
 
-	setEnv(shelldata->arguments[1], shelldata->arguments[2], shelldata);
+	set_env(sh->arguments[1], sh->arguments[2], sh);
 
 	return (1);
 }
 
 /**
- * unset_env - deletes a environment variable
- * @shelldata: data structure
+ * _unsetenv - deletes a environment variable
+ *
+ * @sh: data relevant (env name)
  *
  * Return: 1 on success.
  */
-int unset_env(shell_state *shelldata)
+int _unsetenv(shell_state *sh)
 {
-	char *var_env, *name_env;
 	char **realloc_environ;
+	char *var_env, *name_env;
 	int i, j, k;
 
-	if (shelldata->arguments[1] == NULL)
+	if (sh->arguments[1] == NULL)
 	{
-		getError(shelldata, -1);
+		get_error(sh, -1);
 		return (1);
 	}
-	k = -1, i = 0;
-	while (shelldata->_environ[i])
+	k = -1;
+	for (i = 0; sh->_environ[i]; i++)
 	{
-		var_env = _strdup(shelldata->_environ[i]);
+		var_env = _strdup(sh->_environ[i]);
 		name_env = _strtok(var_env, "=");
-		if (_strcmp(name_env, shelldata->arguments[1]) == 0)
+		if (_strcmp(name_env, sh->arguments[1]) == 0)
+		{
 			k = i;
+		}
 		free(var_env);
-		i++;
 	}
 	if (k == -1)
 	{
-		getError(shelldata, -1);
+		get_error(sh, -1);
 		return (1);
 	}
-	realloc_environ = (char **)malloc(sizeof(char *) * (i));
-	i = j = 0;
-	while (shelldata->_environ[i])
+	realloc_environ = malloc(sizeof(char *) * (i));
+	for (i = j = 0; sh->_environ[i]; i++)
 	{
 		if (i != k)
 		{
-			realloc_environ[j] = shelldata->_environ[i];
+			realloc_environ[j] = sh->_environ[i];
 			j++;
 		}
-		i++;
 	}
 	realloc_environ[j] = NULL;
-	free(shelldata->_environ[k]);
-	free(shelldata->_environ);
-	shelldata->_environ = realloc_environ;
+	free(sh->_environ[k]);
+	free(sh->_environ);
+	sh->_environ = realloc_environ;
 	return (1);
 }
