@@ -1,208 +1,91 @@
 #include "main.h"
-/**
- * execute_cmd - executes cmd lines
- * @shelldata: data structure
- *
- * Return: 1 (success)
- */
-int execute_cmd(shell_state *shelldata)
-{
-	int state, exec;
-	char *dir;
-	pid_t pd;
-	pid_t wpd;
-
-	exec = is_exec(shelldata);
-	(void)wpd;
-	if (exec == -1)
-		return (1);
-	if (exec == 0)
-	{
-		dir = which_cmd(shelldata->arguments[0], shelldata->_environ);
-		if (check_cmd_err(dir, shelldata) == 1)
-			return (1);
-	}
-	pd = fork();
-	if (pd == 0)
-	{
-		if (exec == 0)
-			dir = which_cmd(shelldata->arguments[0], shelldata->_environ);
-		else
-			dir = shelldata->arguments[0];
-		execve(dir + exec, shelldata->arguments, shelldata->_environ);
-	}
-	else if (pd < 0)
-	{
-		perror(shelldata->argv[0]);
-		return (1);
-	}
-	else
-	{
-		for (;;)
-		{
-			wpd = waitpid(pd, &state, WUNTRACED);
-			if (WIFEXITED(state) || WIFSIGNALED(state))
-				break;
-		}
-	}
-	shelldata->status = state / 256;
-	return (1);
-}
 
 /**
- * is_exec - determines if is an exec
- * @shelldata: data structure
- *
- * Return: 0 (not an executable), otherwise (it is)
+ * get_builtin - builtin that pais the command in the arg
+ * @cmd: command
+ * Return: function pointer of the builtin command
  */
-int is_exec(shell_state *shelldata)
+int (*get_builtin(char *cmd))(shell_state *)
 {
+	builtin_t builtin[] = {
+		{ "env", _env },
+		{ "exit", exit_shell },
+		{ "setenv", _setenv },
+		{ "unsetenv", _unsetenv },
+		{ "cd", cd_shell },
+		{ "help", get_help },
+		{ NULL, NULL }
+	};
 	int i;
-	char *input;
-	struct stat st;
 
-	input = shelldata->arguments[0];
-
-	for (i = 0; input[i]; i++)
+	for (i = 0; builtin[i].name; i++)
 	{
-		if (input[i] == '/' && i != 0)
-		{
-			if (input[i + 1] == '.')
-				continue;
-			i++;
-			break;
-		}
-		else if (input[i] == '.')
-		{
-			if (input[i + 1] == '.')
-				return (0);
-			if (input[i + 1] == '/')
-				continue;
-			else
-				break;
-		}
-		else
+		if (_strcmp(builtin[i].name, cmd) == 0)
 			break;
 	}
 
-	if (i == 0)
-		return (0);
-
-	if (stat(input + i, &st) == 0)
-		return (i);
-
-	getError(shelldata, 127);
-	return (-1);
+	return (builtin[i].f);
 }
 
 
 /**
- * which_cmd - locates a cmd
- * @cmd: command name
- * @_environ: env var
- *
- * Return: location of the cmd
+ * get_error - calls the error according the builtin, syntax or permission
+ * @shelldata: data structure that contains arguments
+ * @eval: error value
+ * Return: error
  */
-char *which_cmd(char *cmd, char **_environ)
+int get_error(shell_state *shelldata, int eval)
 {
-	int len_dir, len_cmd, i;
-	char *path, *ptr_path, *token_path, *dir;
-	struct stat st;
+	char *error;
 
-	path = get_env("PATH", _environ);
-
-	if (path)
+	switch (eval)
 	{
-		ptr_path = _strdup(path);
-		token_path = _strtok(ptr_path, ":");
-		len_cmd = _strlen(cmd);
-		i = 0;
-		while (token_path)
-		{
-			if (is_current(path, &i))
-				if (stat(cmd, &st) == 0)
-					return (cmd);
-			len_dir = _strlen(token_path);
-			dir = malloc(len_dir + len_cmd + 2);
-			if (dir == NULL)
-				return (NULL);
-			_strcpy(dir, token_path), _strcat(dir, "/");
-			_strcat(dir, cmd), _strcat(dir, "\0");
-			if (stat(dir, &st) == 0)
-			{
-				free(ptr_path);
-				return (dir);
-			}
-			free(dir);
-			token_path = _strtok(NULL, ":");
-		}
-		free(ptr_path);
-		if (stat(cmd, &st) == 0)
-			return (cmd);
-		return (NULL);
+	case -1:
+		error = error_env(shelldata);
+		break;
+	case 126:
+		error = error_path_126(shelldata);
+		break;
+	case 127:
+		error = error_not_found(shelldata);
+		break;
+	case 2:
+		if (_strcmp("exit", shelldata->arguments[0]) == 0)
+			error = error_exit_shell(shelldata);
+		else if (_strcmp("cd", shelldata->arguments[0]) == 0)
+			error = error_get_cd(shelldata);
+		break;
 	}
-	if (cmd[0] == '/')
-		if (stat(cmd, &st) == 0)
-			return (cmd);
-	return (NULL);
+
+	if (error)
+	{
+		write(STDERR_FILENO, error, _strlen(error));
+		free(error);
+	}
+
+	shelldata->status = eval;
+	return (eval);
 }
 
 
+
 /**
- * is_current - checks if in the current dir
- * @path: path
- * @i: index
+ * exec_line - finds builtins and commands
  *
- * Return: 1 (path is searchable), 0 otherwise
+ * @datash: data relevant (arguments)
+ * Return: 1 on success.
  */
-int is_current(char *path, int *i)
+int exec_line(shell_state *datash)
 {
-	if (path[*i] == ':')
+	int (*builtin)(shell_state *datash);
+
+	if (datash->arguments[0] == NULL)
 		return (1);
 
-	while (path[*i] != ':' && path[*i])
-		*i += 1;
+	builtin = get_builtin(datash->arguments[0]);
 
-	if (path[*i])
-		*i += 1;
+	if (builtin != NULL)
+		return (builtin(datash));
 
-	return (0);
-}
-
-
-/**
- * check_cmd_err - checks for user permissions
- * @dir: dest dir
- * @shelldata: data structure
- *
- * Return: 1 (error), 0 (no error)
- */
-int check_cmd_err(char *dir, shell_state *shelldata)
-{
-	if (dir == NULL)
-	{
-		getError(shelldata, 127);
-		return (1);
-	}
-
-	if (_strcmp(shelldata->arguments[0], dir) != 0)
-	{
-		if (access(dir, X_OK) == -1)
-		{
-			getError(shelldata, 126);
-			free(dir);
-			return (1);
-		}
-		free(dir);
-	}
-	else
-	{
-		if (access(shelldata->arguments[0], X_OK) == -1)
-		{
-			getError(shelldata, 126);
-			return (1);
-		}
-	}
-
-	return (0);
+	return (cmd_exec(datash));
 }

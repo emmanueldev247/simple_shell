@@ -1,25 +1,27 @@
 #include "main.h"
 
 /**
- * exit_cmd - exits the shell
- * @shelldata: data structure
+ * exit_shell - exits the shell
  *
- * Return: 0 (success), failure otherwise
+ * @shelldata: data relevant (status and arguments)
+ * Return: 0 on success.
  */
-int exit_cmd(shell_state *shelldata)
+int exit_shell(shell_state *shelldata)
 {
 	unsigned int ustatus;
-	int big_number, str_len, is_digit;
+	int is_digit;
+	int str_len;
+	int big_number;
 
-	if (shelldata->arguments[1])
+	if (shelldata->arguments[1] != NULL)
 	{
-		is_digit = my_isdigit(shelldata->arguments[1]);
 		ustatus = my_atoi(shelldata->arguments[1]);
+		is_digit = my_isdigit(shelldata->arguments[1]);
 		str_len = _strlen(shelldata->arguments[1]);
 		big_number = ustatus > (unsigned int)INT_MAX;
-		if (str_len > 10 || !is_digit || big_number)
+		if (!is_digit || str_len > 10 || big_number)
 		{
-			getError(shelldata, 2);
+			get_error(shelldata, 2);
 			shelldata->status = 2;
 			return (1);
 		}
@@ -27,3 +29,4 @@ int exit_cmd(shell_state *shelldata)
 	}
 	return (0);
 }
+

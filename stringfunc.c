@@ -8,8 +8,8 @@
  */
 char *_strdup(const char *str)
 {
+	size_t len;
 	char *duplicate;
-	unsigned int len;
 
 	if (str == NULL)
 		return (NULL);
@@ -24,8 +24,6 @@ char *_strdup(const char *str)
 
 	return (duplicate);
 }
-
-
 /**
  * _strlen - function that returns the length of a const char *
  * @s: pointer to string
@@ -44,56 +42,84 @@ int _strlen(const char *s)
 }
 
 /**
- * _strlenV2 - function that returns the length of a char *
- * @s: pointer to string
+ * compare_str - compare characters of strings
+ * @input: input string
+ * @delimeter: delimiter
  *
- * Return: the length of the string
+ * Return: 1 (equal); 0 otherwise
  */
-int _strlenV2(char *s)
+int compare_str(char *input, const char *delimeter)
 {
-	int len;
+	int found;
+	const char *d;
 
-	len = 0;
-	while (s[len] != '\0')
-		len++;
-
-	return (len);
+	while (*input)
+	{
+		found = 0;
+		for (d = delimeter; *d; d++)
+		{
+			if (*input == *d)
+			{
+				found = 1;
+				break;
+			}
+		}
+		if (!found)
+			return (0);
+		input++;
+	}
+	return (1);
 }
 
-/**
- * _memcpy - function that copies memory area
- * @dest: memory area to copy to
- * @src: memory area to copy from
- * @n: number of bytes to be filled
- *
- * Return: returns pointer to memory area dest
- */
-char *_memcpy(void *dest, const void *src,  unsigned int n)
-{
-	unsigned int i;
-	char *dest_cpy = (char *)dest;
-	char *src_cpy = (char *)src;
-
-	for (i = 0; i < n; i++)
-		*(dest_cpy + i) = *(src_cpy + i);
-
-	return (dest_cpy);
-}
 
 /**
- * _memcpyV2 - function that copies memory area (overload)
- * @dest: memory area to copy to
- * @src: memory area to copy from
- * @n: number of bytes to be filled
+ * _strtok - customized implementation of strtok function
+ *			to split a string by some delimiter
+ * @input: string to split
+ * @delimiter: delimiter
  *
- * Return: returns pointer to memory area dest
+ * Return: string in split form
  */
-char *_memcpyV2(char *dest, char *src, int n)
+char *_strtok(char *input, const char *delimiter)
 {
-	int i;
+	unsigned int i, flag;
+	char *str_start;
+	static char *split, *str_end;
 
-	for (i = 0; i < n; i++)
-		*(dest + i) = *(src + i);
+	if (input != NULL)
+	{
+		if (compare_str(input, delimiter))
+			return (NULL);
 
-	return (dest);
+		split = input;
+		i = _strlen(input);
+		str_end = input + i;
+	}
+	str_start = split;
+	if (str_start == str_end)
+		return (NULL);
+
+	for (flag = 0; *split; split++)
+	{
+		if (split != str_start)
+			if (*split && *(split - 1) == '\0')
+				break;
+		i = 0;
+		while (delimiter[i])
+		{
+			if (*split == delimiter[i])
+			{
+				*split = '\0';
+				if (split == str_start)
+					str_start++;
+				break;
+			}
+			i++;
+		}
+		if (flag == 0 && *split)
+			flag = 1;
+	}
+	if (flag == 0)
+		return (NULL);
+	return (str_start);
 }

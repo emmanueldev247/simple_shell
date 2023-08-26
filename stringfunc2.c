@@ -1,5 +1,31 @@
 #include "main.h"
 /**
+ * _strcat - function to concatenate two strings
+ * @dest: destination string
+ * @src: source string
+ * Return: return a pointer to the resulting string in dest
+ */
+char *_strcat(char *dest, const char *src)
+{
+	int i, j;
+
+	i = 0;
+	while (dest[i] != '\0')
+		i++;
+
+	j = 0;
+	while (src[j] != '\0')
+	{
+		dest[i] = src[j];
+		i++;
+		j++;
+	}
+
+	dest[i] = '\0';
+	return (dest);
+}
+
+/**
  * _strcpy - function to clone strcpy()
  * @dest: destination
  * @src: source
@@ -12,41 +38,12 @@ char *_strcpy(char *dest, char *src)
 	len = _strlen(src);
 
 	for (i = 0; i <= len; i++)
-	{
 		dest[i] = src[i];
-	}
 
 	dest[len + 1] = '\0';
 
 	return (dest);
 }
-
-/**
- * _strcat - function to concatenate two strings
- * @dest: destination string
- * @src: source string
- * Return: return a pointer to the resulting string in dest
- */
-char *_strcat(char *dest, const char *src)
-{
-	int src_len, dest_len;
-
-	dest_len = _strlen(dest);
-	src_len = 0;
-
-	while (src[src_len] != '\0')
-	{
-		dest[dest_len] = src[src_len];
-		dest_len++;
-		src_len++;
-	}
-
-	dest[dest_len + 1] = '\0';
-
-	return (dest);
-}
-
-
 /**
  * _strcmp - Compare two strings
  * @s1: The first string
@@ -101,4 +98,3 @@ void revString(char *s)
 		end--;
 	}
 }
-
